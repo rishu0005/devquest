@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamp('completed_at')->nullable();
             $table->boolean('close')->nullable();
             $table->boolean('close_reason')->nullable();
-            $table->boolean('is_delete')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

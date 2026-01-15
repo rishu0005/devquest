@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Quest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,11 +28,11 @@ class QuestController extends Controller
                 'user_id' => Auth::id(),
                 'title' => $request->quest_name,
                 'description' => $request->quest_description,
-                'xp' => 50,
                 'status' => 'pending',
                 'start_date_time' => $request->quest_start_date ?? null,
                 'end_date_time' => $request->quest_end_date ?? null,
             ]);
+            $this->applyExp( Auth::user(), 50);
             if(! $saved ){
                 return redirect()->back()->with('error', 'something went wrong while saving your quest' );
             }
@@ -95,7 +96,8 @@ class QuestController extends Controller
             }
 
             $quest->status = 'completed';
-            $quest->xp = 50; // set xp for completed quest
+            // $quest->xp = 100; // set xp for completed quest
+            $this->applyExp(Auth::user(), 200);
             $updated = $quest->save();
 
             if(! $updated){
@@ -133,5 +135,17 @@ class QuestController extends Controller
         catch(\Exception $e){
             return redirect()->back()->with('error'. 'something went wrong'. $e);
         }
+    }
+    public function applyExp(User $user, int $expGained){
+        
+        $user->xp += $expGained;
+        
+        while($user->xp >= ($user->level * 1000)){
+            $user->xp -= ($user->level * 1000);
+            $user->level ++;
+        }
+
+        $user->save();
+
     }
 }

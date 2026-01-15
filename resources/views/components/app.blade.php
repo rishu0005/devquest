@@ -14,10 +14,12 @@
     <link rel="stylesheet" href="{{ asset('css/fontawesome.min.css') }}">
 </head>
 <body>
-    <nav class="">
+    <nav class=""> 
         <ul>
+            @if(Auth::check())
             <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
             <li><a href="">Profile</a></li>
+            @endif
             @if(Auth::check())
             <li>
                 <form method="POST" action="{{ route('logout') }}">
